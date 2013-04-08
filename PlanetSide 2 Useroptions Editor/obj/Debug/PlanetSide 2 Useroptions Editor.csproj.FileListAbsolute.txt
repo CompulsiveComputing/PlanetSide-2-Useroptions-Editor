@@ -1,0 +1,7 @@
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\bin\Debug\PlanetSide 2 Useroptions Editor.exe
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\bin\Debug\PlanetSide 2 Useroptions Editor.pdb
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\obj\Debug\PlanetSide_2_Useroptions_Editor.MainForm.resources
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\obj\Debug\PlanetSide 2 Useroptions Editor.csproj.GenerateResource.Cache
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\obj\Debug\PlanetSide 2 Useroptions Editor.exe
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\obj\Debug\PlanetSide 2 Useroptions Editor.pdb
+C:\Users\Gamer\Documents\SharpDevelop Projects\PlanetSide 2 Useroptions Editor\PlanetSide 2 Useroptions Editor\obj\Debug\PlanetSide 2 Useroptions Editor.csprojResolveAssemblyReference.cache
