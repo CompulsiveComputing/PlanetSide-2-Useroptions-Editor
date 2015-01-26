@@ -12,55 +12,129 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+
 
 namespace PS2_INI_Editor
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-    	
-    	private string _applicationName = "PlanetSide 2 Useroptions Editor";
-		private string _applicationShortName = "PS2 INI Editer";
-		private string _versionString = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
+	{
+		public PS2ConfigurationHead head = new PS2ConfigurationHead();
 		
-		//private int _defaultIncrimentalBackupsToKeep = 10;
-		//private string _userOptionsLocation = "";
-		//private string _backupFolderLocation = "";
-		//private string _valueCatalogueLocation = "";
-		//private int _incrimentalBackupsToKeep;
+		//public ObservableCollection<String> discoveredGameInstallations = new ObservableCollection<string>();
 		
-		//private string _activeFileName = "";
-		
-		private static string _currentWorkDirectory = System.AppDomain.CurrentDomain.BaseDirectory.ToString();
-		private static string _currentRootDirectory = Directory.GetDirectoryRoot(_currentWorkDirectory).ToString();
-		private string _valueCatalogueName = "ps2useroptionscatalogue.xml";
-		
-		private UserOptionsINI _currentUserOptionsINI;
-		
-		private List<UserOptionsINI> _backupINIlist = new List<UserOptionsINI>();
-		
-		private string _activeSection = "",_activeValue = "";
-		int _activeSectionNumber = -1, _activeValueNumber = -1;		
-		
-		private string[] _defaultGamePaths =
+		public MainWindow()
 		{
-			"Program Files (x86)\\Steam\\steamapps\\common\\PlanetSide 2\\",
-			"Program Files\\Steam\\steamapps\\common\\PlanetSide 2\\",
-			"Program Files (x86)\\PlanetSide 2\\",
-			"Users\\Public\\Sony Online Entertainment\\Installed Games\\PlanetSide 2\\",
-			"Planetside 2\\"
-		};
+			
+			InitializeComponent();
+			
+			this.Title = head._applicationName + "  |  " + head._versionString;
+			
+			
+			head.InitializeHead();
+			UpdateControlCenterBindings();
+		}
+
+		private void RefreshTab(object sender, SelectionChangedEventArgs e)
+		{
+			RefreshTab();
+		}
 		
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+		private void RefreshTab()
+		{
+				if(TabControlCenter.IsSelected)
+				{
+					//UpdateControlCenter();
+				}
+				else if (TabValueEditor.IsSelected)
+				{
+				}
+				else if(TabRawINI.IsSelected)
+				{
+					RawINITextBox.Text = head._currentUserOptionsINI.toString();
+					//MessageBox.Show(RawINITextBoxBinding,"t");
+				}
+		}
+		
+		
+		void Button_Click_Exit(object sender, RoutedEventArgs e)
+		{
+			head.CloseApplication();
+		}
+		
+		void UpdateControlCenterBindings()
+		{
+			//this.PS2Installations.Items.Clear();
+			if (head.discoveredGameInstallations.Count > 1)
+			{
+				PS2Installations.ItemsSource = head.discoveredGameInstallations;
+				PS2Installations.Text = "Please select your intended PlanetSide 2 installation";
+				//PS2Installations
+			}
+			else
+			{
+				this.PS2Installations.Items.Add("No Planetside 2 installations found.");
+				this.PS2Installations.SelectedIndex = 0;
+			}
+		}
+		
 
-        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-    }
+		
+		void PS2Installation_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if(head.selectedGameInstallation != PS2Installations.SelectedIndex)
+			{
+				head.selectedGameInstallation = PS2Installations.SelectedIndex;
+				PS2Installations.SelectedIndex = head.selectedGameInstallation; // done incase for some reason we could not load said installation
+			}
+		}
+		
+		void test_button_click(object sender, RoutedEventArgs e)
+		{
+			head.changesPending = true;
+			
+			/*ValueCatalogue test = new ValueCatalogue();
+			
+			test.addSection("teehee");
+			test.sections[0].addValue("woowoo");
+			
+			MessageBox.Show(XMLSerialize.SerializeToString(test), "test");*/
+		}
+		
+		void enable_Troubleshooting_Button_Click(object sender, RoutedEventArgs e)
+		{
+			//troubleshootingButton1.IsEnabled = !troubleshootingButton1.IsEnabled;
+			//troubleshootingButton2.IsEnabled = !troubleshootingButton2.IsEnabled;
+		}
+		
+		void RawINITextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			head._currentUserOptionsINI.SafelyLoadINIFromString(RawINITextBox.Text);	
+		}
+		
+		void Reload_button_Click(object sender, RoutedEventArgs e)
+		{
+			head.SwitchToInstallation(head.selectedGameInstallation);
+			RefreshTab();
+		}
+		
+		void open_troubleshooting_Button_Click(object sender, RoutedEventArgs e)
+		{
+			TroubleshootingWindow trouble = new TroubleshootingWindow();
+			trouble.Topmost = true;
+			trouble.ShowDialog();
+		}
+		
+		void Settings_Button_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsWindow settings = new SettingsWindow();
+			settings.Topmost = true;
+			settings.ShowDialog();
+		}
+	}
 }
