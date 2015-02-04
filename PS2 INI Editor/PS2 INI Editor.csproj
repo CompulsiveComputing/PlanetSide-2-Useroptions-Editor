@@ -61,9 +61,16 @@
       <DependentUpon>About.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="backupManager.cs" />
+    <Compile Include="BaseINIClasses.cs" />
     <Compile Include="bindables.cs" />
+    <Compile Include="compositeINI.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Setup.xaml.cs">
+      <DependentUpon>Setup.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ValueCatalogue.cs" />
@@ -79,6 +86,7 @@
       <DependentUpon>ValueCatalogueEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ValueTypeCatalogue.cs" />
     <Compile Include="XMLSerialize.cs" />
     <Page Include="About.xaml" />
     <Page Include="MainWindow.xaml">
@@ -94,6 +102,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="SettingsWindow.xaml" />
+    <Page Include="Setup.xaml" />
     <Page Include="troubleshooting.xaml" />
     <Page Include="ValueCatalogueEditor.xaml" />
   </ItemGroup>

@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace PS2_INI_Editor
 {
@@ -18,34 +19,48 @@ namespace PS2_INI_Editor
 	/// </summary>
 	public class settingsBank
 	{
-		
-		public int _defaultIncrimentalBackupsToKeep;
-		public string _userOptionsLocation;
-		public string _backupFolderLocation;
-		public string _valueCatalogueLocation;
-		public int _incrimentalBackupsToKeep;
-		
 		//public string _activeFileName = "";
-		
-		public string _currentWorkDirectory;
-		public string _currentRootDirectory;
+		public string settingsFolder;
+		public int _defaultBackupsToKeep = 10;
+		public string _userOptionsLocation;
+		public bindableString _backupFolderLocation = new bindableString();
+		public string _valueCatalogueLocation;
+		public int _backupsToKeep;
 		public string _valueCatalogueName;
 		public List<String> _savedInstallLocations;
+		public string _lastActiveInstall;
+		public string _timeDateFormat;
+		public bool _wasMaximized;
+		public bool _rememberMaximized;
 		
+		public bool isInitialized = false;
 		
+		[XmlIgnoreAttribute]
+		public string _currentWorkDirectory;
+		
+		[XmlIgnoreAttribute]
+		public string _currentRootDirectory;
+		
+		public settingsBank initializeSettings()
+		{
+			_wasMaximized = false;
+			_rememberMaximized = true;
+			_userOptionsLocation = "";
+			_backupFolderLocation.text = settingsFolder + "Backups\\";
+			_valueCatalogueLocation = settingsFolder;
+			_backupsToKeep = _defaultBackupsToKeep;
+			_valueCatalogueName = "PS2UserOptionsCatalogue.xml";
+			_timeDateFormat = "yyyy-MM-dd_HH_mm_ss";
+			
+			isInitialized = true;
+			
+			return this;
+		}
 		
 		public settingsBank()
 		{
-			_defaultIncrimentalBackupsToKeep = 0;
-			_userOptionsLocation = "";
-			_backupFolderLocation = "";
-			_valueCatalogueLocation = "";
-			_incrimentalBackupsToKeep = 0;
-			
-			
 			_currentWorkDirectory = System.AppDomain.CurrentDomain.BaseDirectory.ToString();
 			_currentRootDirectory = Directory.GetDirectoryRoot(_currentWorkDirectory).ToString();
-			_valueCatalogueName = "ps2useroptionscatalogue.xml";
 		}
 	}
 }

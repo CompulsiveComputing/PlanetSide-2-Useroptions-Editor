@@ -3,11 +3,16 @@
         mc:Ignorable="d"
         x:Class="PS2_INI_Editor.MainWindow"
         Title="PS2 INI Editor"
-        MinWidth="660"
+        MinWidth="680"
         MinHeight="500"
         SizeToContent="WidthAndHeight"
         d:DesignWidth="750"
-        d:DesignHeight="480">
+        d:DesignHeight="480"
+        GotFocus="Window_GotFocus"
+        Closing="Window_Closing"
+        Activated="Window_Activated"
+        ContentRendered="Window_ContentRendered"
+        Height="488">
 	<Grid
 		Background="#FFE3E3E3">
 		<Button
@@ -15,11 +20,11 @@
 			Width="75"
 			Margin="3,3,5,5"
 			VerticalAlignment="Top"
-			HorizontalAlignment="Right" 
-		Click="Settings_Button_Click"/>
+			HorizontalAlignment="Right"
+			Click="Settings_Button_Click" />
 		<Grid
-			Margin="5"
-			Background="{x:Null}">
+			Background="{x:Null}"
+			Margin="5">
 			<Grid.RowDefinitions>
 				<RowDefinition
 					Height="Auto" />
@@ -60,19 +65,19 @@
 								HorizontalAlignment="Left"
 								VerticalAlignment="Top"
 								Margin="8,11,0,0"
-								Width="143"
-								Height="16" />
+								Width="280"
+								FontSize="14"
+								Height="20" />
 							<ComboBox
 								Text="No Planetside 2 installations found."
-								x:Name="PS2Installations"
+								x:Name="PS2InstallationsCombobox"
 								SelectionChanged="PS2Installation_SelectionChanged"
 								MinWidth="340"
 								Grid.Column="0"
 								Grid.Row="0"
-								HorizontalAlignment="Left"
+								HorizontalAlignment="Stretch"
 								VerticalAlignment="Top"
-								Margin="159,10,0,0"
-								Width="340"
+								Margin="181,10,91,0"
 								Height="20" />
 							<Button
 								Content="Browse"
@@ -80,26 +85,25 @@
 								Grid.Row="0"
 								HorizontalAlignment="Right"
 								VerticalAlignment="Top"
+								Margin="0,7,8,0"
 								Width="75"
-								Height="23"
-								Margin="0,7,15,0" />
+								Height="23" />
 						</Grid>
 						<Grid
+							Background="#FFE3E3E3"
 							Grid.Column="0"
 							Grid.Row="1"
 							VerticalAlignment="Bottom"
 							Height="139"
 							Margin="8,8,8,8"
-							HorizontalAlignment="Left"
-							Background="#FFE3E3E3">
+							HorizontalAlignment="Stretch">
 							<Grid
 								Grid.Column="0"
 								Grid.Row="0"
 								VerticalAlignment="Top"
 								Height="121"
-								Width="586"
-								Margin="8,8,8,8"
-								HorizontalAlignment="Left">
+								HorizontalAlignment="Stretch"
+								Margin="8,8,8,8">
 								<Grid.Background>
 									<LinearGradientBrush
 										EndPoint="1,0">
@@ -144,11 +148,10 @@
 							Background="#FFE3E3E3"
 							Grid.Column="0"
 							Grid.Row="1"
-							HorizontalAlignment="Left"
 							VerticalAlignment="Top"
-							Margin="464,134,0,0"
-							Width="146"
-							Height="100">
+							Height="38"
+							HorizontalAlignment="Stretch"
+							Margin="8,196,8,8">
 							<TextBlock
 								Text="Troubleshooting"
 								FontSize="17"
@@ -156,37 +159,211 @@
 								Grid.Row="0"
 								HorizontalAlignment="Left"
 								VerticalAlignment="Top"
-								Margin="12,8,0,0"
 								Width="127"
-								Height="25" />
+								Height="25"
+								Margin="8,8,0,0" />
 							<Button
+								Content="Open troubleshooting"
+								Click="open_troubleshooting_Button_Click"
 								Grid.Column="0"
 								Grid.Row="0"
-								HorizontalAlignment="Left"
-								VerticalAlignment="Bottom"
-								Margin="7,0,0,8"
-								Width="132"
+								VerticalAlignment="Top"
 								Height="23"
-								Content="Open troubleshooting"
-								Click="open_troubleshooting_Button_Click"/>
+								Width="132"
+								HorizontalAlignment="Right"
+								Margin="0,7,8,0" />
 							<TextBlock
 								RenderTransformOrigin="0.5091,0.125"
 								TextWrapping="Wrap"
+								Text="Here lie troubleshooting options, just in case."
 								Grid.Column="0"
 								Grid.Row="0"
 								HorizontalAlignment="Left"
 								VerticalAlignment="Top"
-								Margin="9,33,0,0"
-								Width="130"
-								Height="32"
-								Text="Here lie troubleshooting options, just in case." />
+								Margin="143,14,0,0"
+								Width="286"
+								Height="16" />
+						</Grid>
+						<Grid
+							Background="#FFE3E3E3"
+							Grid.Column="0"
+							Grid.Row="1"
+							VerticalAlignment="Top"
+							Height="38"
+							Margin="8,52,8,0"
+							HorizontalAlignment="Stretch">
+							<TextBlock
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Left"
+								VerticalAlignment="Top"
+								Width="127"
+								Height="25"
+								Margin="8,8,0,0"
+								Text="Backups Folder:"
+								FontSize="14" />
+							<Button
+								Content="Browse"
+								Grid.Column="0"
+								Grid.Row="0"
+								VerticalAlignment="Top"
+								Width="75"
+								Height="23"
+								x:Name="BrowseBackupFolderButton"
+								Click="BrowseBackupFolderButton_Click"
+								HorizontalAlignment="Right"
+								Margin="8,7,8,0" />
+							<TextBox
+								x:Name="BackupFolderTextBox"
+								TextChanged="BackupFolderTextBox_TextChanged"
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Stretch"
+								VerticalAlignment="Top"
+								Margin="113,8,91,0"
+								Height="20"
+								Text="Select a backup directory" />
 						</Grid>
 						<Grid.ColumnDefinitions></Grid.ColumnDefinitions>
 					</Grid>
 				</TabItem>
 				<TabItem
 					x:Name="TabValueEditor"
-					Header="Value Editor">
+					Header="Value Editor"
+					IsEnabled="True">
+					<Grid
+						x:Name="ValueEditorGrid"
+						Background="{x:Null}">
+						<ScrollViewer
+							Height="{Binding ElementName=ValueEditorGrid, Path=ActualHeight}"
+							Width="{Binding ElementName=ValueEditorGrid, Path=ActualWidth}"
+							VerticalScrollBarVisibility="Auto">
+							<ItemsControl
+								x:Name="ValueEditorItemsControl"
+								ItemsSource="{Binding head._currentUserOptionsINI.sectionList}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Grid>
+											<Grid
+												Background="#FFE3E3E3"
+												HorizontalAlignment="Stretch"
+												VerticalAlignment="Top"
+												Margin="8,8,8,8"
+												Height="35">
+												<TextBlock
+													FontWeight="Bold"
+													FontSize="14"
+													Grid.Column="0"
+													Grid.Row="0"
+													HorizontalAlignment="Left"
+													VerticalAlignment="Top"
+													Margin="8,8,8,8"
+													Width="436"
+													Height="19"
+													Text="{Binding name}" />
+											</Grid>
+											
+											<ItemsControl
+												Margin="0,43,0,0"
+												ItemsSource="{Binding valueList}">
+												<ItemsControl.ItemsPanel>
+													<ItemsPanelTemplate>
+														<WrapPanel Orientation="Horizontal" />
+													</ItemsPanelTemplate>
+												</ItemsControl.ItemsPanel>
+												<ItemsControl.ItemTemplate>
+													<DataTemplate>
+														<Grid
+															Background="#FFE3E3E3"
+															HorizontalAlignment="Left"
+															VerticalAlignment="Top"
+															Margin="8,8,8,8"
+															Width="296"
+															Height="116">
+															<TextBlock
+																Text="{Binding name}"
+																FontSize="14"
+																Grid.Column="0"
+																Grid.Row="0"
+																HorizontalAlignment="Left"
+																VerticalAlignment="Top"
+																Margin="10,7,0,0"
+																Width="111"
+																Height="21" />
+															<ComboBox
+																Grid.Column="0"
+																Grid.Row="0"
+																HorizontalAlignment="Stretch"
+																VerticalAlignment="Top"
+																Margin="10,84,10,0"
+																Height="24">
+																<ComboBoxItem
+																	Content="1 - Low" />
+																<ComboBoxItem
+																	Content="2 - Medium" />
+																<ComboBoxItem
+																	Content="3 - High" />
+															</ComboBox>
+															<TextBlock
+																TextWrapping="Wrap"
+																Grid.Column="0"
+																Grid.Row="0"
+																HorizontalAlignment="Left"
+																VerticalAlignment="Top"
+																Margin="10,28,0,0"
+																Width="171"
+																Height="37"
+																Text="Adjusts Render/Postprocess quality" />
+															<TextBlock
+																Text="GPU"
+																Grid.Column="0"
+																Grid.Row="0"
+																HorizontalAlignment="Right"
+																Width="27"
+																Height="16"
+																VerticalAlignment="Top"
+																Margin="0,7,10,73"
+																ToolTipService.InitialShowDelay="50"
+																ToolTipService.ShowDuration="1000000"
+																ToolTipService.BetweenShowDelay="100"
+																ToolTip="Hello!" />
+														</Grid>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</Grid>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+					</Grid>
+				</TabItem>
+				<TabItem
+					x:Name="TabRawINI"
+					Header="Raw INI">
+					<Grid
+						Background="#FFE5E5E5">
+						<Border
+							Name="b"
+							Margin="8,8,8,8" />
+						<TextBox
+							x:Name="RawINITextBox"
+							TextChanged="RawINITextBox_TextChanged"
+							Width="{Binding ElementName=b,Path=ActualWidth}"
+							Height="{Binding ElementName=b,Path=ActualHeight}"
+							Grid.Column="0"
+							HorizontalScrollBarVisibility="Auto"
+							VerticalScrollBarVisibility="Auto"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+							Margin="8,8,8,8"
+							AcceptsReturn="True" />
+					</Grid>
+				</TabItem>
+				<TabItem
+					x:Name="TabPresets"
+					Header="Presets"
+					IsEnabled="True">
 					<Grid
 						Background="{x:Null}">
 						<Grid
@@ -258,7 +435,11 @@
 								Width="27"
 								Height="16"
 								VerticalAlignment="Top"
-								Margin="0,7,10,73" />
+								Margin="0,7,10,73"
+								ToolTipService.InitialShowDelay="50"
+								ToolTipService.ShowDuration="1000000"
+								ToolTipService.BetweenShowDelay="100"
+								ToolTip="Hello!" />
 						</Grid>
 						<Grid
 							Background="#FFE3E3E3"
@@ -386,44 +567,152 @@
 					</Grid>
 				</TabItem>
 				<TabItem
-					x:Name="TabRawINI"
-					Header="Raw INI">
-					<Grid
-						Background="#FFE5E5E5">
-						<Border
-							Name="b"
-							Margin="8,8,8,8" />
-						<TextBox
-							x:Name="RawINITextBox"
-							TextChanged="RawINITextBox_TextChanged"
-							Width="{Binding ElementName=b,Path=ActualWidth}"
-							Height="{Binding ElementName=b,Path=ActualHeight}"
-							Grid.Column="0"
-							HorizontalScrollBarVisibility="Auto"
-							VerticalScrollBarVisibility="Auto"
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch"
-							Margin="8,8,8,8"
-							AcceptsReturn="True" />
-					</Grid>
-				</TabItem>
-				<TabItem
-					x:Name="TabPresets"
-					Header="Presets">
-					<Grid
-						Background="#FFE5E5E5" />
-				</TabItem>
-				<TabItem
 					x:Name="TabKeybindings"
-					Header="Keybindings">
+					Header="Keybindings"
+					IsEnabled="False">
 					<Grid
-						Background="#FFE5E5E5" />
+						Background="#FFE5E5E5"></Grid>
 				</TabItem>
 				<TabItem
 					x:Name="TabBackups"
 					Header="Backups">
 					<Grid
-						Background="#FFE5E5E5" />
+						Background="#FFE5E5E5">
+						<TextBlock
+							Grid.Column="0"
+							Grid.Row="0"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Top"
+							Margin="338,10.96,0,0"
+							Width="51"
+							Height="16"
+							Text="Name:" />
+						<Grid
+							Background="#FFE5E5E5">
+							<TreeView
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Left"
+								Width="251"
+								Margin="8,8,8,8"
+								VerticalAlignment="Stretch"
+								x:Name="BackupsTreeView"
+								SelectedItemChanged="BackupsTreeView_SelectedItemChanged"
+								ItemsSource="{Binding head._backupINIList.allBackups}">
+								<TreeView.ItemTemplate>
+									<HierarchicalDataTemplate
+										ItemsSource="{Binding backupList}">
+										<TextBlock
+											Text="{Binding shortName}"></TextBlock>
+										<HierarchicalDataTemplate.ItemTemplate>
+											<DataTemplate>
+												<TextBlock
+													DataContext="{Binding backup}"
+													Text="{Binding fileName}" />
+											</DataTemplate>
+										</HierarchicalDataTemplate.ItemTemplate>
+									</HierarchicalDataTemplate>
+								</TreeView.ItemTemplate>
+							</TreeView>
+							<TextBox
+								d2p1:Name="BackupsTabNameTextBox" xmlns:d2p1="http://schemas.microsoft.com/winfx/2006/xaml"
+								Focusable="False"
+								Height="20"
+								Width="304"
+								Margin="338,8,0,0"
+								VerticalAlignment="Top"
+								HorizontalAlignment="Left"
+								Grid.Row="0"
+								Grid.Column="0" />
+							<TextBlock
+								Text="Name:"
+								Grid.Column="0"
+								Grid.Row="0"
+								VerticalAlignment="Top"
+								Height="16"
+								Width="51"
+								HorizontalAlignment="Left"
+								Margin="287,10.96,0,0" />
+							<TextBlock
+								Text="If you see this, something has gone wrong."
+								x:Name="BackupsTabDateTextBlock"
+								Grid.Column="0"
+								Grid.Row="0"
+								VerticalAlignment="Top"
+								Height="16"
+								Width="271"
+								HorizontalAlignment="Left"
+								Margin="338,36,0,0" />
+							<Button
+								Content="Restore"
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Bottom"
+								Margin="0,0,288,39"
+								Width="75"
+								Height="23"
+								IsEnabled="False" />
+							<Button
+								Content="Delete"
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Bottom"
+								Margin="0,0,288,8"
+								Width="75"
+								Height="23"
+								IsEnabled="False" />
+							<Button
+								Content="Backup Current UserOptions.INI"
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Bottom"
+								Margin="0,0,8,8"
+								Width="272"
+								Height="23"
+								IsEnabled="False" />
+							<Button
+								Grid.Column="0"
+								Grid.Row="0"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Bottom"
+								Margin="0,0,8,39"
+								Width="272"
+								Height="23"
+								Content="Backup Current Keybindings"
+								IsEnabled="False" />
+							<ScrollViewer
+								Grid.Row="0"
+								Grid.Column="0"
+								HorizontalScrollBarVisibility="Disabled"
+								Name="scv"
+								Margin="287,60,8,70"
+								VerticalAlignment="Stretch"
+								HorizontalAlignment="Stretch">
+								<TextBox
+									x:Name="BackupsTextBox"
+									MaxWidth="{Binding ElementName=scv, Path=ActualWidth}"
+									MaxHeight="{Binding ElementName=scv, Path=ActualHeight}"
+									TextWrapping="Wrap"
+									AcceptsReturn="True"
+									AcceptsTab="True"
+									Text=""
+									VerticalScrollBarVisibility="Auto"
+									HorizontalScrollBarVisibility="Auto" />
+							</ScrollViewer>
+						</Grid>
+						<TextBlock
+							Text="Date:"
+							Grid.Column="0"
+							Grid.Row="0"
+							VerticalAlignment="Top"
+							Height="16"
+							Width="51"
+							HorizontalAlignment="Left"
+							Margin="287,36,0,0" />
+					</Grid>
 				</TabItem>
 			</TabControl>
 			<Grid
@@ -447,28 +736,23 @@
 						Text="Not affiliated with Sony or SOE, use at your own risk." />
 				</TextBlock>
 				<Button
-					Content="About"
-					HorizontalAlignment="Right"
-					VerticalAlignment="Bottom"
-					Width="75"
-					Grid.Column="1"
-					Margin="0,0,240,0"
-					Grid.ColumnSpan="2" />
-				<Button
-					Content="Reload INI"
 					HorizontalAlignment="Right"
 					VerticalAlignment="Bottom"
 					Width="75"
 					Grid.Column="2"
 					Margin="0,0,160,0"
-					Click="Reload_button_Click" />
+					Click="Reload_button_Click"
+					Content="Reload"
+					x:Name="ReloadButton" />
 				<Button
-					Content="Save INI"
 					HorizontalAlignment="Right"
 					VerticalAlignment="Bottom"
 					Width="75"
 					Grid.Column="2"
-					Margin="0,0,80,0" />
+					Margin="0,0,80,0"
+					Content="Save"
+					x:Name="SaveButton"
+					Click="SaveButton_Click" />
 				<Button
 					Content="Exit"
 					HorizontalAlignment="Right"
@@ -478,15 +762,15 @@
 					Click="Button_Click_Exit" />
 			</Grid>
 			<Button
+				Content="Test"
+				Click="test_button_click"
 				Grid.Column="0"
 				Grid.Row="1"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Top"
-				Margin="0,0,84,0"
+				Margin="0,345,-218,0"
 				Width="75"
-				Height="23"
-				Content="Test"
-				Click="test_button_click" />
+				Height="23" />
 			<Grid.ColumnDefinitions></Grid.ColumnDefinitions>
 		</Grid>
 		<Grid.ColumnDefinitions></Grid.ColumnDefinitions>

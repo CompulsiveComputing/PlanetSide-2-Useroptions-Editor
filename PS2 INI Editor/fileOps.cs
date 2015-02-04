@@ -17,27 +17,76 @@ namespace PS2_INI_Editor
 	/// </summary>
 	public class fileOps
 	{
-		public static bool checkWritable()
+		public static void deleteFile(string filePath)
+		{
+			if(fileExists(filePath))
+			{
+				File.Delete(filePath);
+			}
+		}
+		
+		public static bool folderExists(string folderPath)
+		{
+			return Directory.Exists(folderPath);
+		}
+		
+		public static bool fileExists(string filePath)
+		{
+			return File.Exists(filePath);
+		}
+		
+		public static bool createFolder(string folderPath) // really need to put a try/catch in here; Urgent
+		{
+			if(!folderExists(folderPath))
+			{
+				var dir = Directory.CreateDirectory(folderPath);
+				return true;
+			}
+			else
+				return true;
+		}
+		
+		public static bool checkWritable(string filePath)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static bool checkReadable()
+		public static bool checkReadable(string filePath)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static bool setReadOnly()
+		public static bool setReadOnly(string filePath)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static bool removeReadOnly()
+		public static bool removeReadOnly(string filePath)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public static string[] readFile(string filePath)
+		public static bool writeFile(string filePath, string fileContents) // really need to put a try/catch in here; Urgent
+		{
+			if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+			{
+				MessageBoxResult result = MessageBox.Show("Folder not found, would you like to create it?", "Folder not found", MessageBoxButton.YesNo);
+				if(result == MessageBoxResult.Yes)
+					createFolder(Path.GetDirectoryName(filePath));
+				else
+					return false;
+			}
+			
+			if(true) // needs to have checkWritable(filePath)
+			{
+				System.IO.File.WriteAllText(@filePath, fileContents);
+				return true;
+			}
+			else
+				return false;
+		}
+		
+		public static string[] readFileAsArray(string filePath)
 		{
 			if (File.Exists(filePath))
 			{
@@ -49,6 +98,12 @@ namespace PS2_INI_Editor
 				MessageBox.Show("File could not be read from:" + filePath, "File related error");
 				return null;
 			}
+		}
+		
+		public static string readFile(string filePath)
+		{
+			string[] returnedArray = readFileAsArray(filePath);
+			return string.Join("",returnedArray);
 		}
 	}
 }

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace PS2_INI_Editor
 {
@@ -17,13 +18,34 @@ namespace PS2_INI_Editor
 	/// </summary>
 	public class INIinterfacer
 	{
-		public string _location = "";
+		private string _location = "";
+		
+		public string location {
+			get { return _location; }
+			set { _location = value; }
+		}
+		
+		public string fileName
+		{
+			get
+			{
+				return (new FileInfo(_location).Name);
+			}
+		}
 		//public string _rawText = "";
-		public List<Section> _sectionList = new List<Section>();
+		
+		public bool changesMade = false;
+		
+		private ObservableCollection<Section> _sectionList = new ObservableCollection<Section>();
+		
+		public ObservableCollection<Section> sectionList {
+			get { return _sectionList; }
+			set { _sectionList = value; changesMade = true;}
+		}
 		
 		public INIinterfacer(string fileToLoadFrom)
 		{
-			_location = fileToLoadFrom;
+			location = fileToLoadFrom;
 		}
 		
 		public INIinterfacer()
@@ -31,19 +53,19 @@ namespace PS2_INI_Editor
 			
 		}
 		
-		public string GetValue(string _nameOfValue, string _nameOfSection)
+		public string GetValue(string nameOfValue, string _nameOfSection)
 		{
-			if (_nameOfValue != "" && _nameOfSection != "")
+			if (nameOfValue != "" && _nameOfSection != "")
 			{
-				for (int _currentSection = 0;_currentSection<_sectionList.Count;_currentSection++)
+				for (int _currentSection = 0;_currentSection<sectionList.Count;_currentSection++)
 				{
-					if (_sectionList[_currentSection]._name == _nameOfSection)
+					if (sectionList[_currentSection].name == _nameOfSection)
 					{
-						for(int _currentValue=0;_currentValue<_sectionList[_currentSection]._valueList.Count;_currentValue++)
+						for(int _currentValue=0;_currentValue<sectionList[_currentSection].valueList.Count;_currentValue++)
 						{
-							if(_sectionList[_currentSection]._valueList[_currentValue]._name == _nameOfValue)
+							if(sectionList[_currentSection].valueList[_currentValue].name == nameOfValue)
 							{
-								return _sectionList[_currentSection]._valueList[_currentValue]._value;
+								return sectionList[_currentSection].valueList[_currentValue].value;
 							}
 						}
 					}
@@ -52,22 +74,22 @@ namespace PS2_INI_Editor
 			return "";
 		}
 		
-		public bool AddValue(string _nameOfSection, string _nameOfNewValue, string _ValueofNewValue)
+		public bool AddValue(string nameOfSection, string _nameOfNewValue, string _ValueofNewValue)
 		{
-			if (_nameOfNewValue != "" && _nameOfSection != "")
+			if (_nameOfNewValue != "" && nameOfSection != "")
 			{
-				for (int _currentSection = 0;_currentSection<_sectionList.Count;_currentSection++)
+				for (int _currentSection = 0;_currentSection<sectionList.Count;_currentSection++)
 				{
-					if (_sectionList[_currentSection]._name == _nameOfSection)
+					if (sectionList[_currentSection].name == nameOfSection)
 					{
 						Value _newValue = new Value();
 						_newValue.SetValue(_nameOfNewValue,_ValueofNewValue);
-						_sectionList[_currentSection]._valueList.Add(_newValue);
+						sectionList[_currentSection].valueList.Add(_newValue);
 						return true;
 					}
 				}
-				if (AddSection(_nameOfSection))
-					return AddValue(_nameOfSection,_nameOfNewValue,_ValueofNewValue);
+				if (AddSection(nameOfSection))
+					return AddValue(nameOfSection,_nameOfNewValue,_ValueofNewValue);
 				return false;
 			}
 			else
@@ -77,16 +99,16 @@ namespace PS2_INI_Editor
 			}
 		}
 		
-		public bool AddSection(string _nameOfSection)
+		public bool AddSection(string nameOfSection)
 		{
-			if (_nameOfSection != "" )
+			if (nameOfSection != "" )
 			{
-				if (FindSection(_nameOfSection) == -1)
+				if (FindSection(nameOfSection) == -1)
 				{
 
 					Section _newSection = new Section();
-					_newSection._name = _nameOfSection;
-					_sectionList.Add(_newSection);
+					_newSection.name = nameOfSection;
+					sectionList.Add(_newSection);
 					return true;
 
 				}
@@ -106,15 +128,15 @@ namespace PS2_INI_Editor
 		{
 			if (_nameOfValue != "" && _nameOfSection != "")
 			{
-				for (int _currentSection = 0;_currentSection<_sectionList.Count;_currentSection++)
+				for (int _currentSection = 0;_currentSection<sectionList.Count;_currentSection++)
 				{
-					if (_sectionList[_currentSection]._name == _nameOfSection)
+					if (sectionList[_currentSection].name == _nameOfSection)
 					{
-						for(int _currentValue=0;_currentValue<_sectionList[_currentSection]._valueList.Count;_currentValue++)
+						for(int _currentValue=0;_currentValue<sectionList[_currentSection].valueList.Count;_currentValue++)
 						{
-							if(_sectionList[_currentSection]._valueList[_currentValue]._name == _nameOfValue)
+							if(sectionList[_currentSection].valueList[_currentValue].name == _nameOfValue)
 							{
-								_sectionList[_currentSection]._valueList[_currentValue]._value = _newValue;
+								sectionList[_currentSection].valueList[_currentValue].value = _newValue;
 								return true;
 							}
 						}
@@ -130,14 +152,14 @@ namespace PS2_INI_Editor
 			}
 		}
 		
-		public string toString()
+		public string toWritableString()
 		{
 			string _tempstring = "";
 			
-			for (var i=0;i<_sectionList.Count;i++)
+			for (var i=0;i<sectionList.Count;i++)
 			{
-				if(_sectionList[i]._isEnabled == true)
-					_tempstring += _sectionList[i].toString() + Environment.NewLine;
+				if(sectionList[i]._isEnabled == true)
+					_tempstring += sectionList[i].toString() + Environment.NewLine;
 			}
 			return _tempstring;
 		}
@@ -157,10 +179,17 @@ namespace PS2_INI_Editor
 		
 		public bool loadINI()
 		{
-			if (File.Exists(_location))
+			if (File.Exists(location))
 			{
-				string[] _lines = System.IO.File.ReadAllLines(@_location); // each line of the ini file in turn
-				return LoadINIFromStringArray(_lines);
+				string[] _lines = System.IO.File.ReadAllLines(@location); // each line of the ini file in turn
+				bool returnBool = LoadINIFromStringArray(_lines);
+				if(returnBool)
+				{
+					changesMade = false;
+					return true;
+				}
+				else
+					return false;
 			}
 			else
 			{
@@ -174,40 +203,40 @@ namespace PS2_INI_Editor
 			return (_subjectInQuestion.IndexOf("[")!=-1 && _subjectInQuestion.IndexOf("]")!=-1);
 		}
 		
-		List<Section> AddDisabled(List<Section> _inputSectionList)
+		ObservableCollection<Section> AddDisabled(ObservableCollection<Section> _inputSectionList)
 		{
 			bool _missingSection, _missingValue;
 			
-			List<Section> _combinedSectionList = _inputSectionList;
+			ObservableCollection<Section> _combinedSectionList = _inputSectionList;
 			
 			try
 			{
-				for(int _workingSection=0;_workingSection<_sectionList.Count;_workingSection++)
+				for(int _workingSection=0;_workingSection<sectionList.Count;_workingSection++)
 				{
 					_missingSection = true;
 					
 					for(int _inputSection=0;_inputSection<_combinedSectionList.Count;_inputSection++)
 					{
-						if (_sectionList[_inputSection]._name == _sectionList[_workingSection]._name)
+						if (sectionList[_inputSection].name == sectionList[_workingSection].name)
 						{
 							_missingSection = false;
 						}
 					}
 					
 					if (_missingSection)
-						_combinedSectionList.Add(_sectionList[_workingSection]);
+						_combinedSectionList.Add(sectionList[_workingSection]);
 					
-					for(int _workingValue=0;_workingValue<_sectionList.Count;_workingValue++)
+					for(int _workingValue=0;_workingValue<sectionList.Count;_workingValue++)
 					{
 						_missingValue = true;
 						
 						for(int _inputSection=0;_inputSection<_combinedSectionList.Count;_inputSection++)
 						{
-							if (_sectionList[_workingSection]._name == _combinedSectionList[_inputSection]._name)
+							if (sectionList[_workingSection].name == _combinedSectionList[_inputSection].name)
 							{
-								for(int _inputValue=0;_inputValue<_combinedSectionList[_inputSection]._valueList.Count;_inputValue++)
+								for(int _inputValue=0;_inputValue<_combinedSectionList[_inputSection].valueList.Count;_inputValue++)
 								{
-									if (_sectionList[_workingSection]._valueList[_workingValue]._name == _combinedSectionList[_inputSection]._valueList[_inputValue]._name)
+									if (sectionList[_workingSection].valueList[_workingValue].name == _combinedSectionList[_inputSection].valueList[_inputValue].name)
 									{
 										_missingValue = false;
 									}
@@ -215,8 +244,8 @@ namespace PS2_INI_Editor
 								}
 								if (_missingValue)
 								{
-									_combinedSectionList[_inputSection]._valueList.Add(_sectionList[_workingSection]._valueList[_workingValue]);
-									_combinedSectionList[_inputSection]._valueList[_combinedSectionList[_inputSection]._valueList.Count-1]._isEnabled = false;
+									_combinedSectionList[_inputSection].valueList.Add(sectionList[_workingSection].valueList[_workingValue]);
+									_combinedSectionList[_inputSection].valueList[_combinedSectionList[_inputSection].valueList.Count-1].isEnabled = false;
 								}
 							}
 						}
@@ -306,12 +335,12 @@ namespace PS2_INI_Editor
 								
 								if (_tempINI.FindSection(_sectionStringArray[0]) == -1) // combine sections of same name
 								{
-									_tempINI._sectionList.Add(new Section());// we need a new section object to put the found section into
-									_tempINI._sectionList[_tempINI._sectionList.Count-1].fromStringArray(_sectionStringArray);// throw our found section into our new section object
+									_tempINI.sectionList.Add(new Section());// we need a new section object to put the found section into
+									_tempINI.sectionList[_tempINI.sectionList.Count-1].fromStringArray(_sectionStringArray);// throw our found section into our new section object
 								}
 								else
 								{
-									_tempINI._sectionList[_tempINI.FindSection(_sectionStringArray[0])].fromStringArray(_sectionStringArray);
+									_tempINI.sectionList[_tempINI.FindSection(_sectionStringArray[0])].fromStringArray(_sectionStringArray);
 								}
 								
 								
@@ -334,8 +363,8 @@ namespace PS2_INI_Editor
 					if (_currentLine>=10000)
 						System.Windows.MessageBox.Show("Sanity Check, INI length exceeded 10000");
 				}
-				_tempINI._sectionList = AddDisabled(_tempINI._sectionList);
-				_sectionList = _tempINI._sectionList;
+				_tempINI.sectionList = AddDisabled(_tempINI.sectionList);
+				sectionList = _tempINI.sectionList;
 				return true;
 			}
 			catch
@@ -354,9 +383,9 @@ namespace PS2_INI_Editor
 			{
 				_inputSectionName = _inputSectionName.Trim(' ','[',']');
 				
-				for (int _currentSection = 0;_currentSection<_sectionList.Count;_currentSection++)
+				for (int _currentSection = 0;_currentSection<sectionList.Count;_currentSection++)
 				{
-					if (_sectionList[_currentSection]._name == _inputSectionName)
+					if (sectionList[_currentSection].name == _inputSectionName)
 					{
 						return _currentSection;
 					}
@@ -379,9 +408,9 @@ namespace PS2_INI_Editor
 			
 			if (_inputSectionNumber!=-1  && _inputValueName!="")
 			{
-				for (int _currentValue = 0;_currentValue<_sectionList[_inputSectionNumber]._valueList.Count;_currentValue++)
+				for (int _currentValue = 0;_currentValue<sectionList[_inputSectionNumber].valueList.Count;_currentValue++)
 				{
-					if (_sectionList[_inputSectionNumber]._valueList[_currentValue]._name == _inputValueName) // we found our value!
+					if (sectionList[_inputSectionNumber].valueList[_currentValue].name == _inputValueName) // we found our value!
 					{
 						_foundValueNumber = _currentValue;
 					}
@@ -395,27 +424,58 @@ namespace PS2_INI_Editor
 	
 	public class Section
 	{
-		public string _name="unitialized";
-		public List<Value> _valueList = new List<Value>();
+		private string _name="unitialized";
+		public string name
+		{
+			get
+			{
+				return _name;
+			}
+			set
+			{
+				_name = value;
+			}
+		}
+		
+		private ObservableCollection<Value> _valueList = new ObservableCollection<Value>();
+		
+		public ObservableCollection<Value> valueList
+		{
+			get
+			{
+				return _valueList;
+			}
+			set
+			{
+				if(_valueList != value)
+				{
+					_valueList = value;
+				}
+			}
+		}
+		
 		public bool _isEnabled = true;
-		bool isThisASectionHeaden(string _subjectInQuestion)
+		
+		bool isThisASectionHeader(string _subjectInQuestion)
 		{
 			return (_subjectInQuestion.IndexOf("[")!=-1 && _subjectInQuestion.IndexOf("]")!=-1);
 		}
+		
 		public string toString()
 		{
 			string _tempstring = "["+_name+"]" + Environment.NewLine;
-			for(var i=0;i<_valueList.Count;i++)
+			for(var i=0;i<valueList.Count;i++)
 			{
-				if(_valueList[i].toString().Length>3 && _valueList[i]._isEnabled==true)
-					_tempstring += _valueList[i].toString() + Environment.NewLine;
+				if(valueList[i].toString().Length>3 && valueList[i].isEnabled==true)
+					_tempstring += valueList[i].toString() + Environment.NewLine;
 			}
 			return _tempstring;
 		}
+		
 		public bool fromStringArray(string[] _stringArray)
 		{
 			int _arrayPosition=0;
-			if(isThisASectionHeaden(_stringArray[_arrayPosition]))
+			if(isThisASectionHeader(_stringArray[_arrayPosition]))
 			{
 				_name = _stringArray[_arrayPosition].Trim(' ','[',']');
 				//System.Windows.MessageBox.Show(_stringArray.Length.ToString());
@@ -423,8 +483,8 @@ namespace PS2_INI_Editor
 				{
 					if (_stringArray[_forlooper].Length>3)
 					{
-						_valueList.Add(new Value());
-						_valueList[_valueList.Count-1].fromString(_stringArray[_forlooper]);
+						valueList.Add(new Value());
+						valueList[valueList.Count-1].fromString(_stringArray[_forlooper]);
 						//System.Windows.MessageBox.Show((_valueList[_valueList.Count-1].toString()));
 					}
 				}
@@ -435,33 +495,57 @@ namespace PS2_INI_Editor
 			else
 				return false;
 		}
+		
+		public bool AddValue(string Name)
+		{
+			Value newValue = new Value();
+			newValue.name = Name;
+			valueList.Add(newValue);
+			return true;
+		}
 	}
 	
 	public class Value
 	{
+		public string name
+		{
+			get
+			{
+				return _name;
+			}
+			set
+			{
+				_name = value;
+			}
+		}
+		
+		
 		//public ValueType valuetype = ;
-		public string _name = null;
-		public string _value=null;
+		private string _name = null;
+		public string value=null;
 		//public float _upperBounds = 0;
 		//public float _lowerBounds = 0;
-		public bool _isEnabled=false;
+		public bool isEnabled=false;
+		
 		public void SetValue(string _newName, string _newValue)
 		{
-			_name = _newName;
-			_value = _newValue;
-			_isEnabled = true;
+			name = _newName;
+			value = _newValue;
+			isEnabled = true;
 		}
+		
 		public string toString()
 		{
-			return _name + "=" + _value;
+			return name + "=" + value;
 		}
+		
 		public bool fromString(string _inputString)
 		{
 			//System.Windows.MessageBox.Show(_inputString);
 			string[] _inputStringSplitArray = _inputString.Split('=');
-			_name = _inputStringSplitArray[0];
-			_value = _inputStringSplitArray[1];
-			_isEnabled = true;
+			name = _inputStringSplitArray[0];
+			value = _inputStringSplitArray[1];
+			isEnabled = true;
 			return false;
 		}
 	}

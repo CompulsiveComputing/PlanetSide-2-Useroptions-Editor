@@ -31,7 +31,7 @@ namespace PS2_INI_Editor
 		void Value_Catalogue_Editor_Button_Click(object sender, RoutedEventArgs e)
 		{
 			ValueCatalogueEditor catalogueEditor = new ValueCatalogueEditor();
-			catalogueEditor.Topmost = true;
+			//catalogueEditor.Topmost = true;
 			catalogueEditor.ShowDialog();
 		}
 	}
